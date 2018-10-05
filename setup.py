@@ -41,7 +41,7 @@ def fullsplit(path, result=None):
     return fullsplit(head, [tail] + result)
 
 
-for scheme in INSTALL_SCHEMES.values():
+for scheme in list(INSTALL_SCHEMES.values()):
     scheme['data'] = scheme['purelib']
 
 SKIP_EXTENSIONS = [".pyc", ".pyo", ".swp", ".swo"]

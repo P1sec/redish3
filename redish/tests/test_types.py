@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 from redish import types
 from redish.client import ResponseError
@@ -40,7 +40,7 @@ class test_List(ClientTestCase):
             l[1] = 2
 
     def test__len__(self):
-        initial = range(100)
+        initial = list(range(100))
         l = self.client.List("test:List:__len__", initial)
         self.assertEqual(len(l), len(initial))
         l2 = self.client.List("test:List:__len__:empty")
@@ -58,8 +58,9 @@ class test_List(ClientTestCase):
     def test__getslice__(self):
         data = ["foo", "bar", "baz", "xuzzy"]
         l = self.client.List("test:List:__getslice__", data)
-        self.assertListEqual(l[:2], ["foo", "bar"])
-        self.assertListEqual(l[:-1], ["foo", "bar", "baz"])
+        import ipdb; ipdb.set_trace()
+        self.assertListEqual(list(l)[:2], ["foo", "bar"])
+        self.assertListEqual(list(l)[:-1], ["foo", "bar", "baz"])
 
     def test_append(self):
         data = ["foo", "bar", "baz"]
@@ -74,7 +75,7 @@ class test_List(ClientTestCase):
         self.assertListEqual(list(l), ["xuzzy"] + data)
 
     def test_trim(self):
-        data = map(str, range(100))
+        data = list(map(str, list(range(100))))
         l = self.client.List("test:List:trim", data)
         l.trim(0, 50)
         self.assertListEqual(list(l), data[:50])
@@ -138,7 +139,7 @@ class test_Set(ClientTestCase):
         self.assertNotIn("zaz", s)
 
     def test__len__(self):
-        data = range(100)
+        data = list(range(100))
         s = self.client.Set("test:Set:__len__", data)
         self.assertEqual(len(s), 100)
 
@@ -301,6 +302,7 @@ class test_SortedSet(ClientTestCase):
         data2 = (("bar", 1.2), ("xuzzy", 0.2), ("zaz", 0.4))
         z = self.client.SortedSet("test:SortedSet:update", data1)
         z.update(data2)
+        print(list(z))
         self.assertListEqual(list(z), ["xuzzy", "baz", "zaz", "foo", "bar"])
 
     def test_range_by_score(self):
@@ -380,14 +382,14 @@ class test_Dict(ClientTestCase):
 
     def test__len__(self):
         d = self.client.Dict("test:Dict:__len__", dict((i, i)
-                                                    for i in range(100)))
+                                                    for i in list(range(100))))
         self.assertEqual(len(d), 100)
 
     def test__iter__(self):
         # also tests d.iteritems() + d.items()
-        items = dict((i, i) for i in map(str, range(100)))
+        items = dict((i, i) for i in list(map(str, list(range(100)))))
         d = self.client.Dict("test:Dict:__iter__", items)
-        self.assertListEqual(list(iter(d)), items.items())
+        self.assertListEqual(list(iter(d)), list(items.items()))
 
     def test__repr__(self):
         d = self.client.Dict("test:Dict:__repr__", foo="bar")
@@ -395,20 +397,20 @@ class test_Dict(ClientTestCase):
 
     def test_iterkeys(self):
         # also tests d.keys()
-        items = dict((i, i) for i in map(str, range(100)))
+        items = dict((i, i) for i in list(map(str, list(range(100)))))
         d = self.client.Dict("test:Dict:iterkeys", items)
-        self.assertItemsEqual(list(d.iterkeys()), items.keys())
+        self.assertItemsEqual(list(d.keys()), list(items.keys()))
 
     def test_itervalues(self):
         # also tests d.values()
-        items = dict((i, i) for i in map(str, range(100)))
+        items = dict((i, i) for i in list(map(str, list(range(100)))))
         d = self.client.Dict("test:Dict:itervalues", items)
-        self.assertItemsEqual(list(d.itervalues()), items.values())
+        self.assertItemsEqual(list(d.values()), list(items.values()))
 
     def test_has_key(self):
         d = self.client.Dict("test:Dict:has_key", foo="bar")
-        self.assertTrue(d.has_key("foo"))
-        self.assertFalse(d.has_key("bar"))
+        self.assertTrue("foo" in d)
+        self.assertFalse("bar" in d)
 
     def test_get(self):
         d = self.client.Dict("test:Dict:get", foo="bar")
@@ -476,7 +478,7 @@ class QueueCase(ClientTestCase):
         self.assertFalse(q.full())
 
         q2 = self.qtype("test:Queue:full:2", maxsize=10)
-        [q2.put(i) for i in map(str, range(10))]
+        [q2.put(i) for i in map(str, list(range(10)))]
         self.assertTrue(q2.full())
 
     def test_put_get(self):

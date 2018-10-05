@@ -105,7 +105,7 @@ class Proxy(Redis):
         if isinstance(value, (int, types.Int)):
             self.set(key, int(value))
             return
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             self.set(key, encode(value, "UTF-8"))
             return
         if not value:
@@ -126,7 +126,7 @@ class Proxy(Redis):
         elif isinstance(value, (dict, types.Dict)):
             pline = pline.hmset(key, value)
         elif isinstance(value, (types.ZSet, types.SortedSet)):
-            for k,v in value.items():
+            for k,v in list(value.items()):
                 pline = pline.zadd(key, k, v)
         pline.execute()
     

@@ -36,7 +36,8 @@ class Client(object):
         self.port = port or self.port
         self.serializer = serializer or self.serializer
         self.db = db or self.db
-        self.api = _RedisClient(self.host, self.port, self.db, **kwargs)
+        self.api = _RedisClient(self.host, self.port, self.db, decode_responses=True, **kwargs)
+        self.api_serialized = _RedisClient(self.host, self.port, self.db, **kwargs)
 
     def id(self, name):
         """Return the next id for a name."""
@@ -130,13 +131,13 @@ class Client(object):
     def update(self, mapping):
         """Update database with the key/values from a :class:`dict`."""
         return self.api.mset(dict((key, self.prepare_value(value))
-                                for key, value in mapping.items()))
+                                for key, value in list(mapping.items())))
 
     def rename(self, old_name, new_name):
         """Rename key to a new name."""
         try:
             self.api.rename(mkey(old_name), mkey(new_name))
-        except ResponseError, exc:
+        except ResponseError as exc:
             if "no such key" in exc.args:
                 raise KeyError(old_name)
             raise
@@ -160,7 +161,7 @@ class Client(object):
     def items(self, pattern="*"):
         """Get a list of all the ``(key, value)`` pairs in the database,
         or the keys matching ``pattern``, as 2-tuples."""
-        return list(self.iteritems(pattern))
+        return self.iteritems(pattern)
 
     def itervalues(self, pattern="*"):
         """Iterate over all the values in the database, or those where the
@@ -193,7 +194,7 @@ class Client(object):
     def __getitem__(self, name):
         """``x.__getitem__(name) <==> x[name]``"""
         name = mkey(name)
-        value = self.api.get(name)
+        value = self.api_serialized.get(name)
         if value is None:
             raise KeyError(name)
         return self.value_to_python(value)

@@ -1,4 +1,4 @@
-from __future__ import with_statement
+
 
 import unittest2 as unittest
 
@@ -50,7 +50,7 @@ class test_Client(ClientTestCase):
                 "test:update:2": 2,
                 "test:update:3": 3}
         self.client.update(keys)
-        for key, value in keys.items():
+        for key, value in list(keys.items()):
             self.assertEqual(self.client[key], value)
         self.client.clear()
 
@@ -87,7 +87,7 @@ class test_Client(ClientTestCase):
                 "test:iterkeys:4": 4}
         self.client.update(keys)
         self.assertItemsEqual(list(self.client.iterkeys("test:iterkeys:*")),
-                keys.keys())
+                list(keys.keys()))
         self.client.clear()
 
     def test_items(self):
@@ -109,7 +109,7 @@ class test_Client(ClientTestCase):
                 "test:values:4": 4}
         self.client.update(keys)
         values = self.client.values("test:values:*")
-        self.assertItemsEqual(values, keys.values())
+        self.assertItemsEqual(values, list(keys.values()))
         self.client.clear()
 
     def test_pop(self):
@@ -136,7 +136,7 @@ class test_Client(ClientTestCase):
         self.client.clear()
         self.assertEqual(len(self.client), 0)
         keys = dict(("test:__len__:%s" % i, i)
-                        for i in range(100))
+                        for i in list(range(100)))
         self.client.update(keys)
         self.assertEqual(len(self.client), 100)
         self.client.clear()

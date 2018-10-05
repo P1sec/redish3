@@ -17,13 +17,13 @@ class ClientPrefixed(Client):
     def update(self, mapping):
         """Update database with the key/values from a :class:`dict`."""
         return self.api.mset(dict((self.prefix + key, self.prepare_value(value))
-                                for key, value in mapping.items()))
+                                for key, value in list(mapping.items())))
 
     def rename(self, old_name, new_name):
         """Rename key to a new name."""
         try:
             self.api.rename(self._mkey_prefixed(old_name), self._mkey_prefixed(new_name))
-        except ResponseError, exc:
+        except ResponseError as exc:
             if "no such key" in exc.args:
                 raise KeyError(old_name)
             raise

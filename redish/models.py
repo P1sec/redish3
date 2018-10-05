@@ -17,7 +17,7 @@ def _unpickle_model(model, id, fields):
     return model(id=id, **fields)
 
 
-class Model(dict):
+class Model(dict, metaclass=ModelType):
     """A Model.
 
     :param manager: The :class:`Manager` for this model.
@@ -45,7 +45,6 @@ class Model(dict):
 
 
     """
-    __metaclass__ = ModelType
 
     id = None
     name = None
@@ -134,7 +133,7 @@ class ManagerType(type):
         return super(ManagerType, cls).__new__(cls, name, bases, attrs)
 
 
-class Manager(Client):
+class Manager(Client, metaclass=ManagerType):
     """A manager.
 
     .. attribute model::
@@ -151,7 +150,6 @@ class Manager(Client):
         connected to this manager.
 
     """
-    __metaclass__ = ManagerType
 
     model = None
     abstract = True

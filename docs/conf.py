@@ -30,8 +30,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'redish'
-copyright = u'2010, Ask Solem <askh@opera.com>'
+project = 'redish'
+copyright = '2010, Ask Solem <askh@opera.com>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -161,8 +161,8 @@ htmlhelp_basename = 'redishdoc'
 # (source start file, target name, title, author, document class
 # [howto/manual]).
 latex_documents = [
-  ('index', 'redish.tex', ur'redish Documentation',
-   ur'Ask Solem', 'manual'),
+  ('index', 'redish.tex', r'redish Documentation',
+   r'Ask Solem', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

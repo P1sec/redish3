@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def maybe_list(value):
-    if hasattr(value, "__iter__"):
+    if hasattr(value, "__iter__") and type(value) is not str:
         return value
     if value is None:
         return []

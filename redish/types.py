@@ -1,6 +1,6 @@
 import bisect
 
-from Queue import Empty, Full
+from queue import Empty, Full
 
 from redis.exceptions import ResponseError
 from redish.utils import mkey
@@ -37,7 +37,7 @@ class List(Type):
         """``x.__setitem__(index, value) <==> x[index] = value``"""
         try:
             self.client.lset(self.name, index, value)
-        except ResponseError, exc:
+        except ResponseError as exc:
             if "index out of range" in exc.args:
                 raise IndexError("list assignment index out of range")
             raise
@@ -182,7 +182,7 @@ class Set(Type):
         if isinstance(other, self.__class__):
             return self.client.sunionstore(self.name, [self.name, other.name])
         else:
-            return map(self.add, other)
+            return list(map(self.add, other))
 
     def intersection(self, other):
         """Return the intersection of two sets as a new set.
@@ -212,8 +212,8 @@ class Set(Type):
         if all([isinstance(a, self.__class__) for a in others]):
             return self.client.sdiff([self.name] + [other.name for other in others])
         else:
-            othersets = filter(lambda x: isinstance(x, set), others)
-            otherTypes = filter(lambda x: isinstance(x, self.__class__), others)
+            othersets = [x for x in others if isinstance(x, set)]
+            otherTypes = [x for x in others if isinstance(x, self.__class__)]
             return self.client.sdiff([self.name] + [other.name for other in otherTypes]).difference(*othersets)
 
     def difference_update(self, other):
@@ -382,7 +382,7 @@ class Dict(Type):
 
     def __iter__(self):
         """``x.__iter__() <==> iter(x)``"""
-        return self.iteritems()
+        return iter(self.items())
 
     def __repr__(self):
         """``x.__repr__() <==> repr(x)``"""
@@ -399,20 +399,20 @@ class Dict(Type):
     def items(self):
         """This dictionary as a list of ``(key, value)`` pairs, as
         2-tuples."""
-        return self._as_dict().items()
+        return list(self._as_dict().items())
 
     def iteritems(self):
         """Returns an iterator over the ``(key, value)`` items present in this
         dictionary."""
-        return iter(self.items())
+        return iter(list(self.items()))
 
     def iterkeys(self):
         """Returns an iterator over the keys present in this dictionary."""
-        return iter(self.keys())
+        return iter(list(self.keys()))
 
     def itervalues(self):
         """Returns an iterator over the values present in this dictionary."""
-        return iter(self.values())
+        return iter(list(self.values()))
 
     def has_key(self, key):
         """Returns ``True`` if ``key`` is present in this dictionary,
@@ -725,7 +725,7 @@ class Int(Type):
 
 def is_zsettable(s):
     """quick check that all values in a dict are reals"""
-    return all(map(lambda x: isinstance(x, (int, float, long)), s.values()))
+    return all([isinstance(x, (int, float)) for x in list(s.values())])
 
 
 class ZSet(object):
@@ -738,7 +738,7 @@ class ZSet(object):
         self._dict = initial
 
     def items(self):
-        return sorted(self._dict.items(), key=lambda x: (x[1], x[0]))
+        return sorted(list(self._dict.items()), key=lambda x: (x[1], x[0]))
 
     def __getitem__(self, s):
         return self._as_set()[s]
@@ -788,11 +788,11 @@ class ZSet(object):
     def range_by_score(self, min, max):
         """Return all the elements with score >= min and score <= max
         (a range query) from the sorted set."""
-        data = self.items()
+        data = list(self.items())
         keys = [r[1] for r in data] 
         start = bisect.bisect_left(keys, min)
         end = bisect.bisect_right(keys, max, start)
         return self._as_set()[start:end]
 
     def _as_set(self):
-        return map(lambda x: x[0], self.items())
+        return [x[0] for x in list(self.items())]
