@@ -36,7 +36,7 @@ class Client(object):
         self.port = port or self.port
         self.serializer = serializer or self.serializer
         self.db = db or self.db
-        self.api = _RedisClient(self.host, self.port, self.db, decode_responses=True, **kwargs)
+        self.api = _RedisClient(self.host, self.port, self.db, decode_responses=False, **kwargs)
         self.api_serialized = _RedisClient(self.host, self.port, self.db, **kwargs)
 
     def id(self, name):
