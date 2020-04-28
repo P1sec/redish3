@@ -145,7 +145,7 @@ class Client(object):
     def keys(self, pattern="*"):
         """Get a list of all the keys in the database, or
         matching ``pattern``."""
-        return self.api.keys(pattern)
+        return [key.decode('utf8') for key in self.api.keys(pattern)]
 
     def iterkeys(self, pattern="*"):
         """An iterator over all the keys in the database, or matching
