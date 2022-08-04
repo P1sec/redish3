@@ -3,8 +3,6 @@ try:
 except ImportError:
     import pickle
 
-import anyjson
-
 from redish.utils import maybe_list
 
 
@@ -75,13 +73,3 @@ class Pickler(Serializer):
         """Decode pickled value to Python object."""
         return pickle.loads(value)
 
-
-class JSON(Serializer):
-
-    def serialize(self, value):
-        """Encode value to JSON format."""
-        return anyjson.serialize(value)
-
-    def deserialize(self, value):
-        """Decode JSON to Python object."""
-        return anyjson.deserialize(value)

@@ -28,7 +28,6 @@ class Client(object):
     port = DEFAULT_PORT
     db = None
     serializer = Pickler()
-    #serializer = anyjson
 
     def __init__(self, host=None, port=None, db=None,
             serializer=None, **kwargs):
